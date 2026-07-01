@@ -1,0 +1,2046 @@
+{
+  "address": "kj2J68Vvi3krH4SgqgGLnn9agdiXk18oDBF1z5wXcQB",
+  "metadata": {
+    "name": "rebalance_pool",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "TwinYield rebalance pool — Liquity-style stability pool. Phase 5."
+  },
+  "instructions": [
+    {
+      "name": "claim_base",
+      "discriminator": [
+        150,
+        87,
+        172,
+        95,
+        207,
+        228,
+        93,
+        90
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_mint"
+        },
+        {
+          "name": "pool_base_ata",
+          "writable": true
+        },
+        {
+          "name": "user_base_ata",
+          "docs": [
+            "User's base-token ATA. Gated to be owned by `user` so claims always",
+            "go to the caller — mirror of EVM `safeTransfer(msg.sender, ...)`."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "discriminator": [
+        242,
+        35,
+        198,
+        137,
+        82,
+        225,
+        242,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_mint"
+        },
+        {
+          "name": "user_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "pool_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "base_mint",
+          "docs": [
+            "Pool's base-token ATA. Required so `deposit` can sync any",
+            "unaccounted incoming base balance into the reward accumulator",
+            "BEFORE refreshing the depositor's snapshot. Without this sync,",
+            "a deposit landing between an arriving harvest and a separate",
+            "`sync_base_reward` call could capture a share of the harvest",
+            "reward without having staked through it (HIGH-severity finding",
+            "from the Phase-7 security review)."
+          ]
+        },
+        {
+          "name": "pool_base_ata",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_depositor",
+      "discriminator": [
+        255,
+        84,
+        19,
+        54,
+        102,
+        55,
+        104,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_pool",
+      "discriminator": [
+        95,
+        180,
+        10,
+        172,
+        84,
+        174,
+        232,
+        40
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury_config",
+          "docs": [
+            "Pulls the agFOGO + gFOGO mint pubkeys from twinyield's config."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                10,
+                120,
+                182,
+                165,
+                224,
+                15,
+                243,
+                97,
+                66,
+                8,
+                232,
+                15,
+                207,
+                154,
+                113,
+                183,
+                98,
+                10,
+                137,
+                144,
+                131,
+                157,
+                111,
+                169,
+                96,
+                171,
+                20,
+                166,
+                96,
+                0,
+                61,
+                43
+              ]
+            }
+          }
+        },
+        {
+          "name": "market_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                10,
+                120,
+                182,
+                165,
+                224,
+                15,
+                243,
+                97,
+                66,
+                8,
+                232,
+                15,
+                207,
+                154,
+                113,
+                183,
+                98,
+                10,
+                137,
+                144,
+                131,
+                157,
+                111,
+                169,
+                96,
+                171,
+                20,
+                166,
+                96,
+                0,
+                61,
+                43
+              ]
+            }
+          }
+        },
+        {
+          "name": "asset_mint"
+        },
+        {
+          "name": "base_mint"
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_asset_ata",
+          "docs": [
+            "Pool's agFOGO ATA — receives user deposits, gets debited in liquidation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "pool_base_ata",
+          "docs": [
+            "Pool's gFOGO ATA — receives collateral on liquidation, paid out via claim."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "InitializePoolArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "liquidate",
+      "discriminator": [
+        223,
+        179,
+        226,
+        125,
+        48,
+        46,
+        39,
+        74
+      ],
+      "accounts": [
+        {
+          "name": "liquidator",
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                10,
+                120,
+                182,
+                165,
+                224,
+                15,
+                243,
+                97,
+                66,
+                8,
+                232,
+                15,
+                207,
+                154,
+                113,
+                183,
+                98,
+                10,
+                137,
+                144,
+                131,
+                157,
+                111,
+                169,
+                96,
+                171,
+                20,
+                166,
+                96,
+                0,
+                61,
+                43
+              ]
+            }
+          }
+        },
+        {
+          "name": "treasury_runtime",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121,
+                  95,
+                  114,
+                  117,
+                  110,
+                  116,
+                  105,
+                  109,
+                  101
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                10,
+                120,
+                182,
+                165,
+                224,
+                15,
+                243,
+                97,
+                66,
+                8,
+                232,
+                15,
+                207,
+                154,
+                113,
+                183,
+                98,
+                10,
+                137,
+                144,
+                131,
+                157,
+                111,
+                169,
+                96,
+                171,
+                20,
+                166,
+                96,
+                0,
+                61,
+                43
+              ]
+            }
+          }
+        },
+        {
+          "name": "market_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                10,
+                120,
+                182,
+                165,
+                224,
+                15,
+                243,
+                97,
+                66,
+                8,
+                232,
+                15,
+                207,
+                154,
+                113,
+                183,
+                98,
+                10,
+                137,
+                144,
+                131,
+                157,
+                111,
+                169,
+                96,
+                171,
+                20,
+                166,
+                96,
+                0,
+                61,
+                43
+              ]
+            }
+          }
+        },
+        {
+          "name": "base_mint",
+          "writable": true
+        },
+        {
+          "name": "atoken_mint",
+          "writable": true
+        },
+        {
+          "name": "xtoken_mint",
+          "writable": true
+        },
+        {
+          "name": "pool_asset_ata",
+          "docs": [
+            "Pool's agFOGO ATA — gets debited by redeem."
+          ],
+          "writable": true
+        },
+        {
+          "name": "pool_xtoken_ata",
+          "docs": [
+            "Required by `twinyield::redeem` because redeem accepts either side",
+            "(and we have to fill the slot). Pool keeps it empty."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury_base_ata",
+          "docs": [
+            "Treasury's base ATA — owned by treasury_config. Source of base tokens."
+          ],
+          "writable": true
+        },
+        {
+          "name": "platform_base_ata",
+          "docs": [
+            "Platform fee recipient."
+          ],
+          "writable": true
+        },
+        {
+          "name": "pool_base_ata",
+          "docs": [
+            "Pool's base ATA — receives the liquidation collateral."
+          ],
+          "writable": true
+        },
+        {
+          "name": "price_oracle"
+        },
+        {
+          "name": "rate_provider"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "twinyield_program",
+          "address": "cEFSci5xgj9YJJg7E6QwuRtVykaCzkD2jp7Nm4Yw4VT"
+        }
+      ],
+      "args": [
+        {
+          "name": "max_amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_base_out",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "sync_base_reward",
+      "docs": [
+        "Permissionless. Absorbs any incoming base-token balance beyond the",
+        "pool's tracked expected into the reward accumulator. See",
+        "`instructions/sync.rs` for the harvest-pipeline narrative."
+      ],
+      "discriminator": [
+        207,
+        40,
+        202,
+        119,
+        253,
+        201,
+        27,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_mint"
+        },
+        {
+          "name": "pool_base_ata"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "transfer_pool_admin",
+      "discriminator": [
+        183,
+        68,
+        180,
+        241,
+        56,
+        206,
+        243,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "unlock",
+      "discriminator": [
+        101,
+        155,
+        40,
+        21,
+        158,
+        189,
+        56,
+        203
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_mint"
+        },
+        {
+          "name": "user_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "pool_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "base_mint",
+          "docs": [
+            "Pool's base-token ATA. Required so `deposit` can sync any",
+            "unaccounted incoming base balance into the reward accumulator",
+            "BEFORE refreshing the depositor's snapshot. Without this sync,",
+            "a deposit landing between an arriving harvest and a separate",
+            "`sync_base_reward` call could capture a share of the harvest",
+            "reward without having staked through it (HIGH-severity finding",
+            "from the Phase-7 security review)."
+          ]
+        },
+        {
+          "name": "pool_base_ata",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_liquidatable_cr",
+      "discriminator": [
+        24,
+        248,
+        153,
+        203,
+        209,
+        195,
+        165,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_cr",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "update_liquidator",
+      "discriminator": [
+        51,
+        232,
+        238,
+        63,
+        126,
+        154,
+        189,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_liquidator",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_unlock_duration",
+      "discriminator": [
+        203,
+        157,
+        129,
+        120,
+        131,
+        247,
+        231,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_duration",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_unlocked",
+      "discriminator": [
+        213,
+        161,
+        76,
+        199,
+        38,
+        28,
+        209,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_mint"
+        },
+        {
+          "name": "user_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "pool_asset_ata",
+          "writable": true
+        },
+        {
+          "name": "base_mint",
+          "docs": [
+            "Pool's base-token ATA. Required so `deposit` can sync any",
+            "unaccounted incoming base balance into the reward accumulator",
+            "BEFORE refreshing the depositor's snapshot. Without this sync,",
+            "a deposit landing between an arriving harvest and a separate",
+            "`sync_base_reward` call could capture a share of the harvest",
+            "reward without having staked through it (HIGH-severity finding",
+            "from the Phase-7 security review)."
+          ]
+        },
+        {
+          "name": "pool_base_ata",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Depositor",
+      "discriminator": [
+        219,
+        74,
+        92,
+        245,
+        101,
+        149,
+        45,
+        97
+      ]
+    },
+    {
+      "name": "MarketConfig",
+      "discriminator": [
+        119,
+        255,
+        200,
+        88,
+        252,
+        82,
+        128,
+        24
+      ]
+    },
+    {
+      "name": "PoolState",
+      "discriminator": [
+        247,
+        237,
+        227,
+        245,
+        215,
+        195,
+        222,
+        70
+      ]
+    },
+    {
+      "name": "TreasuryConfig",
+      "discriminator": [
+        124,
+        54,
+        212,
+        227,
+        213,
+        189,
+        168,
+        41
+      ]
+    },
+    {
+      "name": "TreasuryRuntime",
+      "discriminator": [
+        123,
+        41,
+        221,
+        148,
+        42,
+        241,
+        58,
+        211
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "OnlyAdmin",
+      "msg": "only admin"
+    },
+    {
+      "code": 6001,
+      "name": "OnlyLiquidator",
+      "msg": "only liquidator"
+    },
+    {
+      "code": 6002,
+      "name": "DepositZeroAmount",
+      "msg": "deposit zero amount"
+    },
+    {
+      "code": 6003,
+      "name": "UnlockZeroAmount",
+      "msg": "unlock zero amount"
+    },
+    {
+      "code": 6004,
+      "name": "UserHasNoDeposit",
+      "msg": "user has no deposit"
+    },
+    {
+      "code": 6005,
+      "name": "NonzeroUnlockedToken",
+      "msg": "nonzero unlocked token"
+    },
+    {
+      "code": 6006,
+      "name": "NoUnlocks",
+      "msg": "no unlocks"
+    },
+    {
+      "code": 6007,
+      "name": "CannotLiquidate",
+      "msg": "cannot liquidate"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidAddress",
+      "msg": "invalid address"
+    },
+    {
+      "code": 6009,
+      "name": "ScaleOverflow",
+      "msg": "scale overflow"
+    },
+    {
+      "code": 6010,
+      "name": "MathOverflow",
+      "msg": "math overflow"
+    },
+    {
+      "code": 6011,
+      "name": "MathUnderflow",
+      "msg": "math underflow"
+    },
+    {
+      "code": 6012,
+      "name": "DivisionByZero",
+      "msg": "division by zero"
+    }
+  ],
+  "types": [
+    {
+      "name": "Depositor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "docs": [
+              "The user this depositor account belongs to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "initial_deposit",
+            "docs": [
+              "Active deposit (9-decimal SPL units). Mirrors EVM",
+              "`snapshots[user].initialDeposit`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "initial_unlock_amount",
+            "docs": [
+              "Amount currently unlocking (9-decimal). Mirrors",
+              "`snapshots[user].initialUnlock.amount`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "initial_unlock_at",
+            "docs": [
+              "Unix timestamp when the unlocking amount becomes withdrawable."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "snap_epoch",
+            "docs": [
+              "Epoch snapshot at last interaction."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "snap_scale",
+            "docs": [
+              "Scale snapshot at last interaction."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "snap_prod",
+            "docs": [
+              "Product factor snapshot at last interaction."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "base_acc_rewards_per_stake",
+            "docs": [
+              "Accumulated reward sum at last interaction, 1e18-scaled."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "base_pending",
+            "docs": [
+              "Pending unclaimed base reward, 1e18-scaled (in base-token 9-decimal",
+              "units boosted by 1e9 — see `claim` for downscaling)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "EmaStorage",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "last_time",
+            "docs": [
+              "Unix timestamp (seconds) of the most recent `save_value` call.",
+              "EVM uses `uint40 block.timestamp`; on SVM we use `i64 Clock::unix_timestamp`."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "sample_interval",
+            "docs": [
+              "Sample interval, in seconds. Matches `EMAStorage.sampleInterval`."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "last_value",
+            "docs": [
+              "Last observed raw value, 1e18-scaled. Matches `EMAStorage.lastValue`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "last_ema_value",
+            "docs": [
+              "Last computed EMA value, 1e18-scaled. Matches `EMAStorage.lastEmaValue`."
+            ],
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeeRatio",
+      "docs": [
+        "Mint or redeem fee ratio. Ported from `Market.sol::FeeRatio`.",
+        "",
+        "The fee actually applied is either `default_fee` (inside the stability",
+        "boundary) or `default_fee + extra_fee` (outside it), depending on the",
+        "direction — see `docs/01-protocol-overview.md::Fee model` for the table."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "default_fee",
+            "docs": [
+              "Default fee, 1e18-scaled."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "extra_fee",
+            "docs": [
+              "Extra fee delta, 1e18-scaled signed."
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitializePoolArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "liquidator",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidatable_cr",
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Admin pubkey. Mirror of `Market.DEFAULT_ADMIN_ROLE` holder."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury_config",
+            "docs": [
+              "Pointer to the TreasuryConfig PDA this market drives."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "platform",
+            "docs": [
+              "Platform / fee recipient. Mirror of `Market.platform`."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "reserve_pool",
+            "docs": [
+              "Optional reserve pool (`Market.reservePool`). `Pubkey::default()` =",
+              "\"not set\" sentinel."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "stability_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "self_liquidation_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "recap_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "stability_incentive_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_incentive_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "self_liq_incentive_ratio",
+            "type": "u64"
+          },
+          {
+            "name": "atoken_mint_fee",
+            "type": {
+              "defined": {
+                "name": "FeeRatio"
+              }
+            }
+          },
+          {
+            "name": "xtoken_mint_fee",
+            "type": {
+              "defined": {
+                "name": "FeeRatio"
+              }
+            }
+          },
+          {
+            "name": "atoken_redeem_fee",
+            "type": {
+              "defined": {
+                "name": "FeeRatio"
+              }
+            }
+          },
+          {
+            "name": "xtoken_redeem_fee",
+            "type": {
+              "defined": {
+                "name": "FeeRatio"
+              }
+            }
+          },
+          {
+            "name": "flags",
+            "docs": [
+              "Packed pause flags. See [`flags`]."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Admin / governance pubkey."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury_config",
+            "docs": [
+              "Pointer to twinyield's `TreasuryConfig` PDA."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "market_config",
+            "docs": [
+              "Pointer to twinyield's `MarketConfig` PDA."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_mint",
+            "docs": [
+              "The asset deposited into this pool — agFOGO mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "base_mint",
+            "docs": [
+              "The base token paid out on liquidation — gFOGO mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidator",
+            "docs": [
+              "Whoever is allowed to call `liquidate`."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidatable_cr",
+            "docs": [
+              "1e18-scaled CR threshold above which liquidation is rejected."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "unlock_duration",
+            "docs": [
+              "Seconds between `unlock` and `withdraw_unlocked`."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "total_supply",
+            "docs": [
+              "Total agFOGO deposited (9-decimal SPL units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_unlocking",
+            "docs": [
+              "Total agFOGO currently in the unlocking cool-down."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "last_asset_loss_error",
+            "docs": [
+              "Liquity-style error correction term, 1e18-scaled."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "epoch",
+            "docs": [
+              "Current epoch. Increments when the pool is fully drained by a",
+              "liquidation."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "scale",
+            "docs": [
+              "Current scale within the current epoch. Increments when `prod` would",
+              "otherwise drop below `1e-9`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "prod",
+            "docs": [
+              "Running product factor. Starts at `PRECISION`, multiplied by",
+              "`(PRECISION - loss / total) / PRECISION` per liquidation."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "base_reward_sum",
+            "docs": [
+              "Accumulated S for base reward at the current `(epoch, scale)`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "prev_scale_base_sum",
+            "docs": [
+              "Accumulated S frozen at `(epoch, scale - 1)`. Lets us serve gain",
+              "queries one scale into the past. EVM stores the full history."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "expected_base_balance",
+            "docs": [
+              "Internal \"known\" balance of `pool_base_ata`. Maintained by:",
+              "* `liquidate` (+= base_out from CPI redeem)",
+              "* `claim_base` (-= claimed amount)",
+              "* `sync_base_reward` (resets to `pool_base_ata.amount` after",
+              "absorbing any unaccounted incoming tokens into the S accumulator)",
+              "Phase 6 introduces this — anything `pool_base_ata.amount > expected`",
+              "is \"incoming harvest yield\" awaiting distribution to depositors."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryConfig",
+      "docs": [
+        "Admin-owned, rarely-mutated configuration for the Treasury."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Admin pubkey. Maps to `OwnableUpgradeable._owner` in the EVM source."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "market_authority",
+            "docs": [
+              "The pubkey allowed to call mint / redeem on this treasury (mirror of",
+              "EVM `Treasury.market`, enforced by `onlyMarket`). Typically the",
+              "MarketConfig PDA."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "base_mint",
+            "docs": [
+              "Base collateral mint (`Treasury.baseToken`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "atoken_mint",
+            "docs": [
+              "aToken mint (`Treasury.aToken`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "xtoken_mint",
+            "docs": [
+              "xToken mint (`Treasury.xToken`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "price_oracle",
+            "docs": [
+              "Price oracle account (`Treasury.priceOracle`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rate_provider",
+            "docs": [
+              "Rate provider account (`Treasury.rateProvider`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "beta",
+            "docs": [
+              "aToken volatility multiple. Matches `Treasury.beta`. Set to `0` for",
+              "the canonical TwinYield deploy (fully stable aToken)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "base_token_cap",
+            "docs": [
+              "Maximum allowed total base token deposit (`Treasury.baseTokenCap`)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "initial_mint_ratio",
+            "docs": [
+              "1e18-scaled ratio used to split the first joint mint into a/x.",
+              "Immutable in EVM (`Treasury.initialMintRatio`). Mirrored here."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TreasuryRuntime",
+      "docs": [
+        "Frequently-mutated treasury state. Updated on every mint/redeem."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_base_token",
+            "docs": [
+              "Total base token held, in **unwrapped** units. Mirrors",
+              "`Treasury.totalBaseToken` exactly — the wrapped balance lives on the",
+              "Treasury's SPL ATA; this counter tracks the unwrapped equivalent."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "last_permissioned_price",
+            "docs": [
+              "Last permissioned price captured by `initialize_price`. 1e18-scaled.",
+              "Mirrors `Treasury.lastPermissionedPrice`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "ema_leverage_ratio",
+            "docs": [
+              "EMA storage for the leverage ratio (`Treasury.emaLeverageRatio`)."
+            ],
+            "type": {
+              "defined": {
+                "name": "EmaStorage"
+              }
+            }
+          },
+          {
+            "name": "initialized_price",
+            "docs": [
+              "Set to `true` after `initialize_price`. Mirrors the EVM",
+              "`require(lastPermissionedPrice == 0)` guard."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

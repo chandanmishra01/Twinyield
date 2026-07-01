@@ -1,0 +1,674 @@
+{
+  "address": "5NV1FWaebqAB7FJNAcH22KyzPBZaafNmctLpa9EQ2nMJ",
+  "metadata": {
+    "name": "mocks",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Testnet-only mocks: MockGFOGO base token + MockPriceOracle"
+  },
+  "instructions": [
+    {
+      "name": "initialize_mock_gfogo",
+      "discriminator": [
+        14,
+        136,
+        168,
+        192,
+        145,
+        148,
+        60,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  103,
+                  102,
+                  111,
+                  103,
+                  111,
+                  95,
+                  114,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "docs": [
+            "The SPL mint backing MockGFOGO. The deploy script creates it with",
+            "`mint_authority = rate PDA`. We just record the pubkey here."
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_mock_oracle",
+      "discriminator": [
+        18,
+        149,
+        36,
+        131,
+        144,
+        177,
+        67,
+        101
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "oracle",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "initial_price",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "mock_gfogo_burn_from",
+      "docs": [
+        "Admin-only: burn MockGFOGO from a holder. Admin signs as the burner;",
+        "the holder's ATA `delegate` or `owner` must permit this off-chain.",
+        "Simplest pattern: admin == holder (the deploy keypair holds the bulk",
+        "supply during tests)."
+      ],
+      "discriminator": [
+        84,
+        27,
+        95,
+        99,
+        211,
+        221,
+        131,
+        81
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "rate",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  103,
+                  102,
+                  111,
+                  103,
+                  111,
+                  95,
+                  114,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "from",
+          "writable": true
+        },
+        {
+          "name": "authority",
+          "docs": [
+            "Whoever signs as the burner — usually the holder of `from`, but for",
+            "admin testing we let `admin` sign and `from` is a delegated account."
+          ],
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "mock_gfogo_mint_to",
+      "docs": [
+        "Admin-only: mint MockGFOGO to `recipient_ata`. PDA `rate` is the",
+        "mint authority on the underlying SPL mint."
+      ],
+      "discriminator": [
+        7,
+        72,
+        68,
+        40,
+        107,
+        89,
+        3,
+        9
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "rate",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  103,
+                  102,
+                  111,
+                  103,
+                  111,
+                  95,
+                  114,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "writable": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "recipient",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "mock_gfogo_transfer_admin",
+      "discriminator": [
+        237,
+        204,
+        120,
+        164,
+        234,
+        35,
+        93,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "rate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  103,
+                  102,
+                  111,
+                  103,
+                  111,
+                  95,
+                  114,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "mock_oracle_transfer_admin",
+      "discriminator": [
+        205,
+        98,
+        67,
+        182,
+        135,
+        142,
+        20,
+        185
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "oracle"
+          ]
+        },
+        {
+          "name": "oracle",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_admin",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "mock_set_price",
+      "discriminator": [
+        144,
+        42,
+        159,
+        110,
+        155,
+        184,
+        48,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "oracle"
+          ]
+        },
+        {
+          "name": "oracle",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_price",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "mock_set_rate",
+      "discriminator": [
+        153,
+        103,
+        215,
+        60,
+        131,
+        72,
+        207,
+        36
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "rate"
+          ]
+        },
+        {
+          "name": "rate",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  103,
+                  102,
+                  111,
+                  103,
+                  111,
+                  95,
+                  114,
+                  97,
+                  116,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_rate",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "mock_set_validity",
+      "discriminator": [
+        189,
+        66,
+        217,
+        56,
+        76,
+        96,
+        39,
+        64
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "oracle"
+          ]
+        },
+        {
+          "name": "oracle",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  111,
+                  99,
+                  107,
+                  95,
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "is_valid",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MockGfogoRate",
+      "discriminator": [
+        99,
+        243,
+        112,
+        152,
+        108,
+        188,
+        128,
+        172
+      ]
+    },
+    {
+      "name": "MockOracle",
+      "discriminator": [
+        208,
+        74,
+        71,
+        99,
+        160,
+        22,
+        158,
+        240
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "OnlyAdmin",
+      "msg": "only admin"
+    },
+    {
+      "code": 6001,
+      "name": "ZeroPrice",
+      "msg": "zero price"
+    },
+    {
+      "code": 6002,
+      "name": "ZeroRate",
+      "msg": "zero rate"
+    },
+    {
+      "code": 6003,
+      "name": "ZeroAdmin",
+      "msg": "zero admin"
+    },
+    {
+      "code": 6004,
+      "name": "MintMismatch",
+      "msg": "mint does not match rate.mint"
+    }
+  ],
+  "types": [
+    {
+      "name": "MockGfogoRate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "rate",
+            "type": "u128"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MockOracle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_price",
+            "type": "u128"
+          },
+          {
+            "name": "is_valid",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
