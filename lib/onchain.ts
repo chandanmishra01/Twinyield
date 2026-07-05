@@ -1,6 +1,94 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getAccount, getMint } from "@solana/spl-token";
+import { BorshAccountsCoder, Idl } from "@coral-xyz/anchor";
 import { PK, PRECISION, TOKEN_SCALE, MAX_LEVERAGE } from "./deployment";
+import rebalancePoolIdl from "./idl/rebalance_pool.json";
+import twinyieldIdl from "./idl/twinyield.json";
+
+// Read-only Borsh coders. Decoding through the IDL keeps us correct even if the
+// on-chain struct layout shifts (e.g. an inserted field), unlike hand-rolled
+// byte offsets — important now that TreasuryRuntime carries the YT yield index.
+const poolCoder = new BorshAccountsCoder(rebalancePoolIdl as Idl);
+const twinyieldCoder = new BorshAccountsCoder(twinyieldIdl as Idl);
+
+export const DEPOSITOR_SEED = "rebal_depositor";
+export const YT_POSITION_SEED = "yt_position";
+
+export function depositorPda(user: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(DEPOSITOR_SEED), user.toBuffer()],
+    PK.rebalancePool,
+  )[0];
+}
+
+// Per-holder YT (agFOGO) yield-accrual position — seeds ["yt_position", owner].
+export function ytPositionPda(user: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from(YT_POSITION_SEED), user.toBuffer()],
+    PK.twinyield,
+  )[0];
+}
+
+export interface PoolStateView {
+  totalSupply9: bigint; // agFOGO currently staked
+  totalUnlocking9: bigint; // agFOGO in the unlock cooldown
+  unlockDuration: bigint; // seconds between unlock and withdraw
+  epoch: bigint;
+  scale: bigint;
+  liquidatableCr: bigint; // 1e18-scaled CR threshold
+}
+
+export async function fetchPoolState(conn: Connection): Promise<PoolStateView | null> {
+  const info = await conn.getAccountInfo(PK.poolState);
+  if (!info) return null;
+  const d = poolCoder.decode("PoolState", info.data as Buffer);
+  return {
+    totalSupply9: BigInt(d.total_supply.toString()),
+    totalUnlocking9: BigInt(d.total_unlocking.toString()),
+    unlockDuration: BigInt(d.unlock_duration.toString()),
+    epoch: BigInt(d.epoch.toString()),
+    scale: BigInt(d.scale.toString()),
+    liquidatableCr: BigInt(d.liquidatable_cr.toString()),
+  };
+}
+
+export interface DepositorView {
+  exists: boolean;
+  initialDeposit9: bigint; // active staked agFOGO
+  initialUnlockAmount9: bigint; // agFOGO unlocking
+  initialUnlockAt: bigint; // unix ts when withdrawable
+  basePending9: bigint; // pending base (gFOGO) reward, 9-dec units
+  snapEpoch: bigint;
+  snapScale: bigint;
+}
+
+export async function fetchDepositor(
+  conn: Connection,
+  user: PublicKey,
+): Promise<DepositorView> {
+  const info = await conn.getAccountInfo(depositorPda(user));
+  if (!info) {
+    return {
+      exists: false,
+      initialDeposit9: 0n,
+      initialUnlockAmount9: 0n,
+      initialUnlockAt: 0n,
+      basePending9: 0n,
+      snapEpoch: 0n,
+      snapScale: 0n,
+    };
+  }
+  const d = poolCoder.decode("Depositor", info.data as Buffer);
+  return {
+    exists: true,
+    initialDeposit9: BigInt(d.initial_deposit.toString()),
+    initialUnlockAmount9: BigInt(d.initial_unlock_amount.toString()),
+    initialUnlockAt: BigInt(d.initial_unlock_at.toString()),
+    basePending9: BigInt(d.base_pending.toString()),
+    snapEpoch: BigInt(d.snap_epoch.toString()),
+    snapScale: BigInt(d.snap_scale.toString()),
+  };
+}
 
 function readU64LE(buf: Buffer, offset: number): bigint {
   return buf.readBigUInt64LE(offset);
@@ -45,9 +133,54 @@ export async function fetchAdminStatus(
   };
 }
 
-// Discriminator (8); then total_base_token (u64)
-export function decodeTreasuryRuntime(buf: Buffer): { totalBase9: bigint } {
-  return { totalBase9: readU64LE(buf, 8) };
+// Borsh-decoded (EmaStorage sits before the YT fields, so hand-rolled offsets
+// for yt_reward_index would be fragile — decode through the IDL instead).
+export function decodeTreasuryRuntime(buf: Buffer): {
+  totalBase9: bigint;
+  ytRewardIndex: bigint;
+  ytYieldReserve9: bigint;
+} {
+  const d = twinyieldCoder.decode("TreasuryRuntime", buf) as {
+    total_base_token: { toString(): string };
+    yt_reward_index: { toString(): string };
+    yt_yield_reserve: { toString(): string };
+  };
+  return {
+    totalBase9: BigInt(d.total_base_token.toString()),
+    ytRewardIndex: BigInt(d.yt_reward_index.toString()),
+    ytYieldReserve9: BigInt(d.yt_yield_reserve.toString()),
+  };
+}
+
+export interface YtPositionView {
+  exists: boolean;
+  rewardDebtIndex: bigint;
+  unclaimed9: bigint;
+  claimable9: bigint; // unclaimed + pending, in 9-dec gFOGO units
+}
+
+// A holder's claimable YT yield = unclaimed + balance * (index - debt) / 1e18.
+// Mirrors the on-chain `YtPosition::pending` + `unclaimed` exactly. A missing
+// position means the holder hasn't registered yet → nothing claimable.
+export async function fetchYtPosition(
+  conn: Connection,
+  user: PublicKey,
+  aBalance9: bigint,
+  ytRewardIndex: bigint,
+): Promise<YtPositionView> {
+  const info = await conn.getAccountInfo(ytPositionPda(user));
+  if (!info) {
+    return { exists: false, rewardDebtIndex: 0n, unclaimed9: 0n, claimable9: 0n };
+  }
+  const d = twinyieldCoder.decode("YtPosition", info.data as Buffer) as {
+    reward_debt_index: { toString(): string };
+    unclaimed: { toString(): string };
+  };
+  const rewardDebtIndex = BigInt(d.reward_debt_index.toString());
+  const unclaimed9 = BigInt(d.unclaimed.toString());
+  const delta = ytRewardIndex > rewardDebtIndex ? ytRewardIndex - rewardDebtIndex : 0n;
+  const pending9 = (aBalance9 * delta) / PRECISION;
+  return { exists: true, rewardDebtIndex, unclaimed9, claimable9: unclaimed9 + pending9 };
 }
 
 export interface ProtocolState {
@@ -61,6 +194,8 @@ export interface ProtocolState {
   xNav: bigint;
   cr: bigint;
   leverage: bigint;
+  ytRewardIndex: bigint; // cumulative YT yield-per-token (1e18-scaled)
+  ytYieldReserve9: bigint; // gFOGO retained in the treasury for YT holders
 }
 
 export async function fetchProtocolState(conn: Connection): Promise<ProtocolState> {
@@ -79,7 +214,9 @@ export async function fetchProtocolState(conn: Connection): Promise<ProtocolStat
 
   const { price18 } = decodeOracle(oracleInfo.data as Buffer);
   const { rate18 } = decodeRate(rateInfo.data as Buffer);
-  const { totalBase9 } = decodeTreasuryRuntime(runtimeInfo.data as Buffer);
+  const { totalBase9, ytRewardIndex, ytYieldReserve9 } = decodeTreasuryRuntime(
+    runtimeInfo.data as Buffer,
+  );
   const aSupply9 = aMint.supply;
   const xSupply9 = xMint.supply;
   const treasuryAta9 = treasuryAta.amount;
@@ -91,6 +228,8 @@ export async function fetchProtocolState(conn: Connection): Promise<ProtocolStat
     aSupply9,
     xSupply9,
     treasuryAta9,
+    ytRewardIndex,
+    ytYieldReserve9,
     ...deriveNavs({ totalBase9, aSupply9, xSupply9, price18 }),
   };
 }

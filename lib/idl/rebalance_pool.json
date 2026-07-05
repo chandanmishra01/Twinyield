@@ -1,5 +1,5 @@
 {
-  "address": "kj2J68Vvi3krH4SgqgGLnn9agdiXk18oDBF1z5wXcQB",
+  "address": "6HJuxsEBZ126Gt7icTZ3jEzqWEtcPkKMrYBd8gUpunsn",
   "metadata": {
     "name": "rebalance_pool",
     "version": "0.1.0",
@@ -7,6 +7,106 @@
     "description": "TwinYield rebalance pool — Liquity-style stability pool. Phase 5."
   },
   "instructions": [
+    {
+      "name": "add_reward",
+      "discriminator": [
+        4,
+        114,
+        188,
+        164,
+        149,
+        249,
+        198,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "extra_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  102,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_vault",
+          "docs": [
+            "Pool-owned vault that will hold deposited reward tokens."
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "manager",
+          "type": "pubkey"
+        },
+        {
+          "name": "period_length",
+          "type": "u32"
+        }
+      ]
+    },
     {
       "name": "claim_base",
       "discriminator": [
@@ -101,6 +201,216 @@
         {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_extra",
+      "discriminator": [
+        29,
+        236,
+        234,
+        79,
+        189,
+        152,
+        209,
+        175
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor",
+            "user_reward"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "extra_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  102,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_reward",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  114,
+                  101,
+                  119,
+                  97,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "current_checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_vault",
+          "writable": true
+        },
+        {
+          "name": "user_reward_ata",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
@@ -211,6 +521,148 @@
         {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit_reward",
+      "discriminator": [
+        245,
+        216,
+        9,
+        179,
+        237,
+        49,
+        165,
+        181
+      ],
+      "accounts": [
+        {
+          "name": "manager",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "extra_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  102,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_vault",
+          "writable": true
+        },
+        {
+          "name": "manager_reward_ata",
+          "writable": true
+        },
+        {
+          "name": "current_checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -348,38 +800,38 @@
             "program": {
               "kind": "const",
               "value": [
-                10,
-                120,
-                182,
-                165,
-                224,
-                15,
+                168,
+                2,
+                130,
+                161,
+                216,
+                234,
+                21,
+                3,
+                114,
+                103,
+                76,
+                26,
+                201,
+                150,
+                34,
+                45,
+                205,
+                138,
+                64,
                 243,
-                97,
-                66,
-                8,
-                232,
-                15,
-                207,
-                154,
-                113,
-                183,
-                98,
-                10,
-                137,
-                144,
-                131,
-                157,
-                111,
-                169,
-                96,
-                171,
-                20,
-                166,
-                96,
-                0,
-                61,
-                43
+                31,
+                178,
+                126,
+                101,
+                38,
+                103,
+                135,
+                57,
+                108,
+                164,
+                195,
+                148
               ]
             }
           }
@@ -410,38 +862,38 @@
             "program": {
               "kind": "const",
               "value": [
-                10,
-                120,
-                182,
-                165,
-                224,
-                15,
+                168,
+                2,
+                130,
+                161,
+                216,
+                234,
+                21,
+                3,
+                114,
+                103,
+                76,
+                26,
+                201,
+                150,
+                34,
+                45,
+                205,
+                138,
+                64,
                 243,
-                97,
-                66,
-                8,
-                232,
-                15,
-                207,
-                154,
-                113,
-                183,
-                98,
-                10,
-                137,
-                144,
-                131,
-                157,
-                111,
-                169,
-                96,
-                171,
-                20,
-                166,
-                96,
-                0,
-                61,
-                43
+                31,
+                178,
+                126,
+                101,
+                38,
+                103,
+                135,
+                57,
+                108,
+                164,
+                195,
+                148
               ]
             }
           }
@@ -524,6 +976,7 @@
       "accounts": [
         {
           "name": "liquidator",
+          "writable": true,
           "signer": true,
           "relations": [
             "pool_state"
@@ -548,6 +1001,49 @@
                   111,
                   108
                 ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_checkpoint",
+          "docs": [
+            "Base-reward checkpoint for the CURRENT `(epoch, scale)` at entry — the",
+            "cell this liquidation may freeze. Created lazily on first touch; mirrors",
+            "EVM `epochToScaleToBaseRewardSum[epoch][scale]`."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  98,
+                  97,
+                  115,
+                  101,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
               }
             ]
           }
@@ -581,38 +1077,38 @@
             "program": {
               "kind": "const",
               "value": [
-                10,
-                120,
-                182,
-                165,
-                224,
-                15,
+                168,
+                2,
+                130,
+                161,
+                216,
+                234,
+                21,
+                3,
+                114,
+                103,
+                76,
+                26,
+                201,
+                150,
+                34,
+                45,
+                205,
+                138,
+                64,
                 243,
-                97,
-                66,
-                8,
-                232,
-                15,
-                207,
-                154,
-                113,
-                183,
-                98,
-                10,
-                137,
-                144,
-                131,
-                157,
-                111,
-                169,
-                96,
-                171,
-                20,
-                166,
-                96,
-                0,
-                61,
-                43
+                31,
+                178,
+                126,
+                101,
+                38,
+                103,
+                135,
+                57,
+                108,
+                164,
+                195,
+                148
               ]
             }
           }
@@ -647,38 +1143,38 @@
             "program": {
               "kind": "const",
               "value": [
-                10,
-                120,
-                182,
-                165,
-                224,
-                15,
+                168,
+                2,
+                130,
+                161,
+                216,
+                234,
+                21,
+                3,
+                114,
+                103,
+                76,
+                26,
+                201,
+                150,
+                34,
+                45,
+                205,
+                138,
+                64,
                 243,
-                97,
-                66,
-                8,
-                232,
-                15,
-                207,
-                154,
-                113,
-                183,
-                98,
-                10,
-                137,
-                144,
-                131,
-                157,
-                111,
-                169,
-                96,
-                171,
-                20,
-                166,
-                96,
-                0,
-                61,
-                43
+                31,
+                178,
+                126,
+                101,
+                38,
+                103,
+                135,
+                57,
+                108,
+                164,
+                195,
+                148
               ]
             }
           }
@@ -710,38 +1206,38 @@
             "program": {
               "kind": "const",
               "value": [
-                10,
-                120,
-                182,
-                165,
-                224,
-                15,
+                168,
+                2,
+                130,
+                161,
+                216,
+                234,
+                21,
+                3,
+                114,
+                103,
+                76,
+                26,
+                201,
+                150,
+                34,
+                45,
+                205,
+                138,
+                64,
                 243,
-                97,
-                66,
-                8,
-                232,
-                15,
-                207,
-                154,
-                113,
-                183,
-                98,
-                10,
-                137,
-                144,
-                131,
-                157,
-                111,
-                169,
-                96,
-                171,
-                20,
-                166,
-                96,
-                0,
-                61,
-                43
+                31,
+                178,
+                126,
+                101,
+                38,
+                103,
+                135,
+                57,
+                108,
+                164,
+                195,
+                148
               ]
             }
           }
@@ -805,8 +1301,12 @@
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         },
         {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
           "name": "twinyield_program",
-          "address": "cEFSci5xgj9YJJg7E6QwuRtVykaCzkD2jp7Nm4Yw4VT"
+          "address": "CJqiNeGDX4dt2hpfbia33KWqMtMBYkJ7XVMEDWfrAfWs"
         }
       ],
       "args": [
@@ -819,6 +1319,300 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "register_user_reward",
+      "discriminator": [
+        209,
+        134,
+        237,
+        230,
+        201,
+        98,
+        154,
+        220
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "depositor"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "depositor",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  100,
+                  101,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  111,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "user_reward",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  117,
+                  115,
+                  101,
+                  114,
+                  95,
+                  114,
+                  101,
+                  119,
+                  97,
+                  114,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "current_checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "remove_reward",
+      "discriminator": [
+        208,
+        115,
+        143,
+        26,
+        159,
+        97,
+        59,
+        232
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "extra_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  102,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "current_checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "sync_base_reward",
@@ -1143,6 +1937,143 @@
       ]
     },
     {
+      "name": "update_reward",
+      "discriminator": [
+        62,
+        165,
+        125,
+        122,
+        39,
+        204,
+        160,
+        29
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "pool_state"
+          ]
+        },
+        {
+          "name": "pool_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_mint"
+        },
+        {
+          "name": "extra_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  102,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "current_checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  98,
+                  97,
+                  108,
+                  95,
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  95,
+                  99,
+                  107,
+                  112,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reward_mint"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.epoch",
+                "account": "PoolState"
+              },
+              {
+                "kind": "account",
+                "path": "pool_state.scale",
+                "account": "PoolState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "manager",
+          "type": "pubkey"
+        },
+        {
+          "name": "period_length",
+          "type": "u32"
+        }
+      ]
+    },
+    {
       "name": "update_unlock_duration",
       "discriminator": [
         203,
@@ -1281,19 +2212,17 @@
           "writable": true
         },
         {
-          "name": "base_mint",
-          "docs": [
-            "Pool's base-token ATA. Required so `deposit` can sync any",
-            "unaccounted incoming base balance into the reward accumulator",
-            "BEFORE refreshing the depositor's snapshot. Without this sync,",
-            "a deposit landing between an arriving harvest and a separate",
-            "`sync_base_reward` call could capture a share of the harvest",
-            "reward without having staked through it (HIGH-severity finding",
-            "from the Phase-7 security review)."
-          ]
+          "name": "base_mint"
         },
         {
           "name": "pool_base_ata",
+          "writable": true
+        },
+        {
+          "name": "user_base_ata",
+          "docs": [
+            "User's base-token ATA — receives claimed base rewards when `do_claim`."
+          ],
           "writable": true
         },
         {
@@ -1301,7 +2230,16 @@
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "do_claim",
+          "type": "bool"
+        },
+        {
+          "name": "unwrap",
+          "type": "bool"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -1316,6 +2254,19 @@
         149,
         45,
         97
+      ]
+    },
+    {
+      "name": "ExtraRewardConfig",
+      "discriminator": [
+        156,
+        61,
+        206,
+        94,
+        49,
+        93,
+        100,
+        171
       ]
     },
     {
@@ -1345,6 +2296,19 @@
       ]
     },
     {
+      "name": "RewardSumCheckpoint",
+      "discriminator": [
+        131,
+        196,
+        244,
+        185,
+        124,
+        2,
+        17,
+        150
+      ]
+    },
+    {
       "name": "TreasuryConfig",
       "discriminator": [
         124,
@@ -1368,6 +2332,19 @@
         241,
         58,
         211
+      ]
+    },
+    {
+      "name": "UserRewardSnapshot",
+      "discriminator": [
+        40,
+        12,
+        150,
+        12,
+        143,
+        81,
+        67,
+        150
       ]
     }
   ],
@@ -1436,6 +2413,36 @@
       "code": 6012,
       "name": "DivisionByZero",
       "msg": "division by zero"
+    },
+    {
+      "code": 6013,
+      "name": "OnlyRewardManager",
+      "msg": "only reward manager"
+    },
+    {
+      "code": 6014,
+      "name": "ZeroPeriodLength",
+      "msg": "zero period length"
+    },
+    {
+      "code": 6015,
+      "name": "UndistributedRewards",
+      "msg": "reward has undistributed amounts"
+    },
+    {
+      "code": 6016,
+      "name": "ZeroAmount",
+      "msg": "zero amount"
+    },
+    {
+      "code": 6017,
+      "name": "StaleRewardSnapshot",
+      "msg": "extra-reward snapshot not settled; claim_extra before unlocking"
+    },
+    {
+      "code": 6018,
+      "name": "IncompleteRewardSettlement",
+      "msg": "must settle all registered extra-reward snapshots before unlocking"
     }
   ],
   "types": [
@@ -1515,11 +2522,24 @@
             "type": "u8"
           },
           {
+            "name": "extra_reward_count",
+            "docs": [
+              "Number of extra-reward tokens this depositor has registered for (via",
+              "`register_user_reward`). When > 0, `unlock` (the only op that reduces",
+              "the extra-reward earning stake) requires every matching per-token",
+              "snapshot to be settled first — see",
+              "`instructions/deposit.rs::settle_extra_before_unlock`. Carved from the",
+              "former padding so the layout/offsets of every prior field are",
+              "unchanged (old accounts read 0, which is correct)."
+            ],
+            "type": "u32"
+          },
+          {
             "name": "_padding",
             "type": {
               "array": [
                 "u8",
-                7
+                3
               ]
             }
           }
@@ -1559,6 +2579,95 @@
               "Last computed EMA value, 1e18-scaled. Matches `EMAStorage.lastEmaValue`."
             ],
             "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExtraRewardConfig",
+      "docs": [
+        "Per-token streaming state for an extra reward token. Mirrors EVM",
+        "`RewardState` + the `rewardManager[token]` entry. One PDA per reward mint,",
+        "seeded `[EXTRA_REWARD_CONFIG_SEED, reward_mint]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "reward_mint",
+            "docs": [
+              "The reward token mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "manager",
+            "docs": [
+              "Authorized depositor of this reward (EVM `rewardManager[token]`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rate",
+            "docs": [
+              "Current reward rate, token base-units per second (EVM `RewardState.rate`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "period_length",
+            "docs": [
+              "Length of a distribution period, seconds (EVM `periodLength`)."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "last_update",
+            "docs": [
+              "Last time `distribute` ran (EVM `lastUpdate`)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "finish_at",
+            "docs": [
+              "Timestamp the current stream ends (EVM `finishAt`)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "queued",
+            "docs": [
+              "Rewards queued while `total_supply == 0` (EVM `queued`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "Pool's vault ATA holding this reward token (authority = pool_state)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "expected_balance",
+            "docs": [
+              "Internal known balance of `vault`, to detect newly-deposited amounts."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
           }
         ]
       }
@@ -1837,15 +2946,8 @@
           {
             "name": "base_reward_sum",
             "docs": [
-              "Accumulated S for base reward at the current `(epoch, scale)`."
-            ],
-            "type": "u128"
-          },
-          {
-            "name": "prev_scale_base_sum",
-            "docs": [
-              "Accumulated S frozen at `(epoch, scale - 1)`. Lets us serve gain",
-              "queries one scale into the past. EVM stores the full history."
+              "Accumulated S for base reward at the *current* `(epoch, scale)`.",
+              "Past `(epoch, scale)` sums live in [`RewardSumCheckpoint`] PDAs."
             ],
             "type": "u128"
           },
@@ -1861,6 +2963,59 @@
               "is \"incoming harvest yield\" awaiting distribution to depositors."
             ],
             "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardSumCheckpoint",
+      "docs": [
+        "One reward-sum checkpoint, keyed by `(epoch, scale)` via PDA seeds. Mirrors",
+        "a single cell of EVM `epochToScaleToBaseRewardSum[epoch][scale]` (and, for",
+        "the extra-reward subsystem, `epochToScaleToExtraRewardSum[token][epoch][scale]`,",
+        "keyed additionally by token in the seeds).",
+        "",
+        "Created lazily (`init_if_needed`) on the first liquidation that touches the",
+        "`(epoch, scale)`, then frozen forever once the scale/epoch advances past it."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "epoch",
+            "docs": [
+              "Epoch this checkpoint belongs to (redundant with the PDA seed; stored",
+              "for inspection / defense-in-depth)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "scale",
+            "docs": [
+              "Scale within the epoch."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "sum",
+            "docs": [
+              "Frozen accumulated S at `(epoch, scale)`, 1e18-convention (matches",
+              "`PoolState::base_reward_sum`)."
+            ],
+            "type": "u128"
           },
           {
             "name": "bump",
@@ -2016,6 +3171,25 @@
             }
           },
           {
+            "name": "yt_reward_index",
+            "docs": [
+              "PT/YT redesign (`docs/11-pt-yt-redesign-spec.md`): cumulative yield",
+              "reward per YT (aToken) unit, scaled by `PRECISION`. Bumped by `harvest`",
+              "(`+= surplus_w9 * PRECISION / atoken_supply_w9`). A holder's entitlement",
+              "is `balance_w9 * (yt_reward_index - reward_debt_index) / PRECISION`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "yt_yield_reserve",
+            "docs": [
+              "PT/YT redesign: wrapped 9-decimal gFOGO retained in the treasury as",
+              "unclaimed YT yield. Subtracted when computing fresh harvest surplus so",
+              "retained yield isn't double-counted; decremented by `claim_yield`."
+            ],
+            "type": "u64"
+          },
+          {
             "name": "initialized_price",
             "docs": [
               "Set to `true` after `initialize_price`. Mirrors the EVM",
@@ -2036,6 +3210,81 @@
               "array": [
                 "u8",
                 6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserRewardSnapshot",
+      "docs": [
+        "Per-(user, reward-token) snapshot. Mirrors EVM",
+        "`snapshots[user].extraRewards[token]` (`UserRewardSnapshot`). Seeded",
+        "`[USER_REWARD_SEED, user, reward_mint]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "reward_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending",
+            "docs": [
+              "Pending unclaimed reward (token base-units), EVM `pending`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "acc_rewards_per_stake",
+            "docs": [
+              "Accumulated reward-sum snapshot at last interaction, EVM",
+              "`accRewardsPerStake`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "snap_epoch",
+            "docs": [
+              "Epoch/scale/prod snapshot at last refresh — a self-contained copy of the",
+              "depositor's epoch state so this token's gain can be computed",
+              "independently (EVM keeps these in the shared `snapshots[user].epoch`)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "snap_scale",
+            "type": "u64"
+          },
+          {
+            "name": "snap_prod",
+            "type": "u128"
+          },
+          {
+            "name": "snap_deposit",
+            "docs": [
+              "The compounded deposit at last refresh — the stake that earns this",
+              "token's reward over the next window (EVM uses `initialDeposit`; extra",
+              "rewards accrue to deposits only, not the unlocking pile)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
               ]
             }
           }

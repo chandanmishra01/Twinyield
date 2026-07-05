@@ -53,7 +53,7 @@ export function Dashboard() {
               <span className="text-white/40">×</span>
             </>
           }
-          sub="YT amplification factor"
+          sub="PT amplification factor"
         />
         <StatCard
           label="Yield Rate (APY)"
@@ -69,21 +69,21 @@ export function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
         <TrancheCard
           name="agFOGO"
-          ticker="PT · Principal"
+          ticker="YT · Yield"
           tone="pt"
           nav={data.aNav}
           navOk={peggedOk}
           supply9={data.aSupply9}
-          blurb="Pegged at $1 while CR > liquidation threshold. Absorbs zero volatility."
+          blurb="Pegged at $1 while CR > liquidation threshold. Price-protected, and earns the pool's staking yield."
         />
         <TrancheCard
           name="xgFOGO"
-          ticker="YT · Leveraged Yield"
+          ticker="PT · Price"
           tone="yt"
           nav={data.xNav}
           navOk={ytAlive}
           supply9={data.xSupply9}
-          blurb={`Captures 100% of price moves at ${fmt18(data.leverage, 2)}× and all realized yield.`}
+          blurb={`Captures 100% of price moves at ${fmt18(data.leverage, 2)}× leverage. No yield.`}
         />
       </div>
 
@@ -139,14 +139,15 @@ function Headline() {
         </span>
       </div>
       <h1 className="font-display text-[32px] sm:text-[44px] md:text-[56px] leading-[1.05] font-semibold text-white">
-        Principal / Yield
+        Price / Yield
         <br />
         <span className="text-gradient-split">split staking.</span>
       </h1>
       <p className="text-white/65 max-w-xl text-sm sm:text-[15px] leading-relaxed">
         Stake gFOGO and split it into <span className="text-[var(--color-brand-300)]">agFOGO</span>, the
-        $1-pegged principal, and <span className="text-[var(--color-yt-300)]">xgFOGO</span>, the leveraged
-        tranche that captures all price action and yield.
+        $1-pegged yield token that earns the staking yield, and{" "}
+        <span className="text-[var(--color-yt-300)]">xgFOGO</span>, the price token with leveraged exposure
+        to FOGO&apos;s price.
       </p>
     </div>
   );

@@ -1,10 +1,13 @@
 "use client";
 
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useState } from "react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import dynamic from "next/dynamic";
-import { useProtocolState, useWalletBalances } from "@/lib/hooks";
+import { useProtocolState, useWalletBalances, useYtPosition } from "@/lib/hooks";
 import { PRECISION, TOKEN_SCALE } from "@/lib/deployment";
 import { fmt18, fmtToken9, fmtUsd, truncAddress } from "@/lib/format";
+import { claimYield, WalletLike } from "@/lib/anchor";
+import { classifyTxError } from "@/lib/txError";
 import { BaseTokenIcon, TokenMark } from "./Landing";
 
 const WalletMultiButton = dynamic(
@@ -14,9 +17,34 @@ const WalletMultiButton = dynamic(
 );
 
 export function Portfolio() {
-  const { publicKey, connected } = useWallet();
+  const wallet = useWallet();
+  const { publicKey, connected } = wallet;
+  const { connection } = useConnection();
   const { data: state } = useProtocolState();
   const { data: bal } = useWalletBalances();
+  const { data: yt, mutate: mutateYt } = useYtPosition(bal?.a9, state?.ytRewardIndex);
+  const [claiming, setClaiming] = useState(false);
+  const [claimErr, setClaimErr] = useState<string | null>(null);
+
+  async function handleClaim() {
+    if (!wallet.publicKey || !wallet.signTransaction || !wallet.signAllTransactions) return;
+    setClaiming(true);
+    setClaimErr(null);
+    try {
+      const w: WalletLike = {
+        publicKey: wallet.publicKey,
+        signTransaction: wallet.signTransaction.bind(wallet) as never,
+        signAllTransactions: wallet.signAllTransactions.bind(wallet) as never,
+      };
+      await claimYield(connection, w);
+      await mutateYt();
+    } catch (e) {
+      const { cancelled, message } = classifyTxError(e);
+      setClaimErr(cancelled ? null : message);
+    } finally {
+      setClaiming(false);
+    }
+  }
 
   if (!connected) {
     return (
@@ -94,20 +122,24 @@ export function Portfolio() {
         <HoldingCard
           variant="pt"
           label="agFOGO"
-          sub="PT · Principal"
+          sub="YT · Yield"
           balance={bal?.a9 ?? 0n}
           nav={state?.aNav ?? PRECISION}
           value={aValueUsd}
-          note="Pegged at $1. Paid out first on redeem."
+          note="Pegged at $1, price-protected. Earns the pool's staking yield — claim it below."
+          claimable9={yt?.claimable9 ?? 0n}
+          onClaim={handleClaim}
+          claiming={claiming}
+          claimErr={claimErr}
         />
         <HoldingCard
           variant="yt"
           label="xgFOGO"
-          sub="YT · Leveraged yield"
+          sub="PT · Price"
           balance={bal?.x9 ?? 0n}
           nav={state?.xNav ?? PRECISION}
           value={xValueUsd}
-          note={state ? `Captures ${fmt18(state.leverage, 2)}× price + all yield.` : ""}
+          note={state ? `Leveraged ${fmt18(state.leverage, 2)}× exposure to gFOGO's price. No yield.` : ""}
         />
       </div>
     </section>
@@ -122,6 +154,10 @@ function HoldingCard({
   nav,
   value,
   note,
+  claimable9,
+  onClaim,
+  claiming,
+  claimErr,
 }: {
   variant: "base" | "pt" | "yt";
   label: string;
@@ -130,11 +166,18 @@ function HoldingCard({
   nav: bigint;
   value: bigint;
   note?: string;
+  claimable9?: bigint;
+  onClaim?: () => void;
+  claiming?: boolean;
+  claimErr?: string | null;
 }) {
   const surface =
     variant === "pt" ? "glass-pt" : variant === "yt" ? "glass-yt" : "glass";
   const accent =
     variant === "pt" ? "text-[var(--color-brand-300)]" : variant === "yt" ? "text-[var(--color-yt-300)]" : "text-[#FFB454]";
+  const hasClaim = onClaim !== undefined;
+  const claimAmt = claimable9 ?? 0n;
+  const canClaim = hasClaim && claimAmt > 0n && !claiming;
   return (
     <div className={`relative rounded-2xl p-5 overflow-hidden ${surface}`}>
       <div className="absolute inset-0 noise opacity-20 pointer-events-none" />
@@ -158,6 +201,32 @@ function HoldingCard({
       {note && (
         <div className="relative text-[10px] text-white/45 mt-3 leading-snug border-t border-white/[0.06] pt-3">
           {note}
+        </div>
+      )}
+      {hasClaim && (
+        <div className="relative mt-3 border-t border-white/[0.06] pt-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[9px] uppercase tracking-widest text-white/40">Claimable yield</div>
+              <div className="tabular text-[15px] text-white leading-tight">
+                {fmtToken9(claimAmt, 4)} <span className="text-white/45 text-[11px]">gFOGO</span>
+              </div>
+            </div>
+            <button
+              onClick={onClaim}
+              disabled={!canClaim}
+              className={`shrink-0 text-[11px] uppercase tracking-widest px-3.5 py-2 rounded-lg border transition ${
+                canClaim
+                  ? "border-[var(--color-brand-300)]/40 text-[var(--color-brand-300)] hover:bg-[var(--color-brand-500)]/15"
+                  : "border-white/[0.08] text-white/30 cursor-not-allowed"
+              }`}
+            >
+              {claiming ? "Claiming…" : "Claim"}
+            </button>
+          </div>
+          {claimErr && (
+            <div className="text-[10px] text-red-300/80 mt-2 leading-snug">{claimErr}</div>
+          )}
         </div>
       )}
     </div>

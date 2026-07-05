@@ -1,0 +1,43 @@
+{
+  "network": "FOGO Testnet",
+  "rpc": "https://testnet.fogo.io",
+  "deployedAt": "2026-07-06T00:00:00.000Z",
+  "admin": "5R8ExUG2Kmf3ZBFjYZdAwU6Mcv5BSYbPfGtji4MNCV3Q",
+  "programs": {
+    "twinyield": "CJqiNeGDX4dt2hpfbia33KWqMtMBYkJ7XVMEDWfrAfWs",
+    "rebalance_pool": "6HJuxsEBZ126Gt7icTZ3jEzqWEtcPkKMrYBd8gUpunsn",
+    "mocks": "HF8FasszKcjvJsokhk57Fv7RT15ciLY6TrCJpD8MPMbA"
+  },
+  "mints": {
+    "base_gfogo": "2C6i4L51fcPj3b3mJvVnd5U3qhG2U1U7UsCsAUmZHhq4",
+    "atoken_agfogo": "4EgLgsnsD6W3kcwpte9feVp4VD6ushN1BZubMTB7U3fh",
+    "xtoken_xgfogo": "4jKXGvdHgssoYCcMFuf478qq8CAxxkXdoiDM3Y8egLkE"
+  },
+  "pdas": {
+    "treasury_config": "E5UkGfz3StiKJTw5ZDNqcsK8Yudp2JcfCn4KX93inhNi",
+    "treasury_runtime": "9wM5boJw8Hfyu87UQen2EXDM4sD6HMnbrhzu5nQyVU6b",
+    "market_config": "6btbVz17ha5RdVp5nJNs2WXdsR93HAojqxprd8VU4HxF",
+    "harvest_config": "8PhZY6ZVFF45Gt2bMx68sk3Y626saZAqj1x7KdxPhVZj",
+    "pool_state": "FikrrTqnc8G5LTjnXU1HSnaAvFEhZ4AHMwbUZao97omt",
+    "mock_oracle": "BVLsrLMTN5J1R5wJu3ugVKeK6jUKJPY3FhX42Hqs8tjr",
+    "mock_gfogo_rate": "6sruBecvYVw4Vq9o9eJhykCyUm28H6k9fejnPX37m9CU"
+  },
+  "atas": {
+    "treasury_base": "C1WU9vUw4R5FycuhYf2X1wZU2d4H5jr4ktRD7oND4xUy",
+    "pool_asset": "FdRpn1EsVY6t5KbsrE1bhTNX7PeRSuxCgS5yfhpZeHX",
+    "pool_base": "2L4JRj2CLdhwJh2DDVvXd4f6mPkxQM6B73V16JKkQGXS"
+  },
+  "config": {
+    "initialPrice": "$100 (1e20)",
+    "initialMintRatio": "50/50",
+    "beta": 0,
+    "baseTokenCap": "1_000_000 (9-dec)",
+    "emaSampleInterval": 3600,
+    "stabilityRatio": "1.30",
+    "liquidationRatio": "1.20",
+    "selfLiquidationRatio": "1.14",
+    "recapRatio": "1.04",
+    "harvestPoolRatio": "10%",
+    "harvestBountyRatio": "1%"
+  }
+}

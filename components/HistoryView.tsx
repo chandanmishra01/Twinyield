@@ -107,13 +107,13 @@ export function HistoryView() {
             tone={stats.pricePct >= 0 ? "pt" : "yt"}
           />
           <MiniStat
-            label="YT NAV Δ"
+            label="PT NAV Δ"
             value={`${stats.ytPct > 0 ? "+" : ""}${stats.ytPct.toFixed(2)}%`}
             sub={`$${stats.ytFrom.toFixed(2)} → $${stats.ytTo.toFixed(2)}`}
             tone="yt"
           />
           <MiniStat
-            label="PT Stable Days"
+            label="YT Stable Days"
             value={`${stats.navStable}/${stats.days + 1}`}
             sub="agFOGO held $1.00"
             tone="pt"
@@ -168,17 +168,17 @@ export function HistoryView() {
         <div className="relative mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 text-[11px] text-white/55 leading-relaxed">
           <FindingBox
             tone="pt"
-            title="agFOGO (PT) · pinned"
+            title="agFOGO (YT) · pinned"
             body="Held $1.00 every single day. Senior tranche is paid first; absorbs zero volatility while CR > liquidation ratio."
           />
           <FindingBox
             tone="yt"
-            title="xgFOGO (YT) · leveraged"
-            body="NAV moved with realized leverage on top of the underlying price action. The junior tranche absorbs all price + all yield."
+            title="xgFOGO (PT) · leveraged"
+            body="NAV moved with realized leverage on top of the underlying price action. The junior tranche absorbs all price movement — no yield."
           />
           <FindingBox
             title="Yield · flows to YT"
-            body="Rate provider grew over the window. Since PT stays at $1, every cent of rate gain lands on YT."
+            body="Rate provider grew over the window. Since agFOGO (YT) holds a steady $1 NAV, every cent of rate gain accrues to YT holders — claimable as gFOGO."
           />
         </div>
       </div>

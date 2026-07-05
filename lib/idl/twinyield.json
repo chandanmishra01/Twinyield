@@ -1,5 +1,5 @@
 {
-  "address": "cEFSci5xgj9YJJg7E6QwuRtVykaCzkD2jp7Nm4Yw4VT",
+  "address": "CJqiNeGDX4dt2hpfbia33KWqMtMBYkJ7XVMEDWfrAfWs",
   "metadata": {
     "name": "twinyield",
     "version": "0.1.0",
@@ -173,6 +173,148 @@
           "type": "pubkey"
         }
       ]
+    },
+    {
+      "name": "claim_yield",
+      "discriminator": [
+        49,
+        74,
+        111,
+        7,
+        186,
+        22,
+        61,
+        165
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury_runtime",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121,
+                  95,
+                  114,
+                  117,
+                  110,
+                  116,
+                  105,
+                  109,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "atoken_mint"
+        },
+        {
+          "name": "user_atoken_ata",
+          "docs": [
+            "The claimer's YT (aToken) token account — its balance is the accrual base."
+          ]
+        },
+        {
+          "name": "yt_position",
+          "docs": [
+            "Per-holder accrual checkpoint. Created on first claim/mint."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  116,
+                  95,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "base_mint"
+        },
+        {
+          "name": "treasury_base_ata",
+          "docs": [
+            "Treasury's base ATA — holds the retained yield."
+          ],
+          "writable": true
+        },
+        {
+          "name": "recipient_base_ata",
+          "docs": [
+            "Where the claimed gFOGO is delivered."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "get_collateral_ratio",
@@ -1627,21 +1769,22 @@
           "name": "base_mint",
           "docs": [
             "Base collateral mint (MockGFOGO on testnet, bFOGO on mainnet).",
-            "instructions enforce that the SPL `Mint` account passed at call time",
-            "matches this pubkey."
+            "Typed so decimals are validated; its authority is external (the LST",
+            "provider), so only decimals/distinctness are checked here."
           ]
         },
         {
           "name": "atoken_mint",
           "docs": [
-            "aToken (agFOGO) SPL mint. Must already exist with `mint_authority`",
-            "set to the treasury_config PDA."
+            "aToken (agFOGO) SPL mint. Must be solely controlled by the",
+            "treasury_config PDA: `mint_authority == treasury_config`, no freeze",
+            "authority, and zero pre-existing supply. Enforced in the handler."
           ]
         },
         {
           "name": "xtoken_mint",
           "docs": [
-            "xToken (xgFOGO) SPL mint."
+            "xToken (xgFOGO) SPL mint. Same constraints as `atoken_mint`."
           ]
         },
         {
@@ -1808,6 +1951,39 @@
           "writable": true
         },
         {
+          "name": "yt_position",
+          "docs": [
+            "YT (aToken) yield-accrual position for the recipient. Settled before the",
+            "balance grows so past yield can't be over-claimed on freshly-minted YT."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  116,
+                  95,
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "recipient_atoken_ata.owner",
+                "account": "TokenAccount"
+              }
+            ]
+          }
+        },
+        {
           "name": "price_oracle"
         },
         {
@@ -1816,6 +1992,10 @@
         {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -3364,6 +3544,19 @@
         234,
         62
       ]
+    },
+    {
+      "name": "YtPosition",
+      "discriminator": [
+        183,
+        232,
+        5,
+        79,
+        17,
+        121,
+        60,
+        177
+      ]
     }
   ],
   "events": [
@@ -3601,81 +3794,91 @@
     },
     {
       "code": 6020,
+      "name": "InvalidMintAuthority",
+      "msg": "invalid mint authority"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidMintConfig",
+      "msg": "invalid mint config"
+    },
+    {
+      "code": 6022,
       "name": "InvalidMarketConfig",
       "msg": "invalid market config"
     },
     {
-      "code": 6021,
+      "code": 6023,
       "name": "CollateralRatioTooSmall",
       "msg": "collateral ratio too small"
     },
     {
-      "code": 6022,
+      "code": 6024,
       "name": "DefaultFeeRatioTooLarge",
       "msg": "default fee ratio too large"
     },
     {
-      "code": 6023,
+      "code": 6025,
       "name": "DeltaFeeTooSmall",
       "msg": "delta fee too small"
     },
     {
-      "code": 6024,
+      "code": 6026,
       "name": "TotalFeeTooLarge",
       "msg": "total fee too large"
     },
     {
-      "code": 6025,
+      "code": 6027,
       "name": "IncentiveTooSmall",
       "msg": "incentive too small"
     },
     {
-      "code": 6026,
+      "code": 6028,
       "name": "InvalidIncentiveConfig",
       "msg": "invalid incentive config"
     },
     {
-      "code": 6027,
+      "code": 6029,
       "name": "EmaSampleIntervalTooSmall",
       "msg": "EMA sample interval too small"
     },
     {
-      "code": 6028,
+      "code": 6030,
       "name": "ZeroAddress",
       "msg": "zero address"
     },
     {
-      "code": 6029,
+      "code": 6031,
       "name": "OnlyAdmin",
       "msg": "only Admin"
     },
     {
-      "code": 6030,
+      "code": 6032,
       "name": "OnlyTreasury",
       "msg": "Only treasury"
     },
     {
-      "code": 6031,
+      "code": 6033,
       "name": "OnlyMarket",
       "msg": "Only market"
     },
     {
-      "code": 6032,
+      "code": 6034,
       "name": "OnlyGateway",
       "msg": "only gateway"
     },
     {
-      "code": 6033,
+      "code": 6035,
       "name": "MathOverflow",
       "msg": "math overflow"
     },
     {
-      "code": 6034,
+      "code": 6036,
       "name": "MathUnderflow",
       "msg": "math underflow"
     },
     {
-      "code": 6035,
+      "code": 6037,
       "name": "DivisionByZero",
       "msg": "division by zero"
     }
@@ -4241,6 +4444,25 @@
             }
           },
           {
+            "name": "yt_reward_index",
+            "docs": [
+              "PT/YT redesign (`docs/11-pt-yt-redesign-spec.md`): cumulative yield",
+              "reward per YT (aToken) unit, scaled by `PRECISION`. Bumped by `harvest`",
+              "(`+= surplus_w9 * PRECISION / atoken_supply_w9`). A holder's entitlement",
+              "is `balance_w9 * (yt_reward_index - reward_debt_index) / PRECISION`."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "yt_yield_reserve",
+            "docs": [
+              "PT/YT redesign: wrapped 9-decimal gFOGO retained in the treasury as",
+              "unclaimed YT yield. Subtracted when computing fresh harvest surplus so",
+              "retained yield isn't double-counted; decremented by `claim_yield`."
+            ],
+            "type": "u64"
+          },
+          {
             "name": "initialized_price",
             "docs": [
               "Set to `true` after `initialize_price`. Mirrors the EVM",
@@ -4290,6 +4512,61 @@
               "PDA bump."
             ],
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "YtPosition",
+      "docs": [
+        "Per-holder YT (yield-token / senior-tranche) yield-accrual position.",
+        "",
+        "PT/YT redesign (`docs/11-pt-yt-redesign-spec.md`). One PDA per YT holder,",
+        "seeds `[YT_POSITION_SEED, owner]`. Tracks the reward index at the holder's",
+        "last checkpoint plus any settled-but-unclaimed yield, using the classic",
+        "MasterChef-style `reward_debt` pattern over classic SPL Token (Token-2022",
+        "transfer hooks are unavailable on FOGO — see `docs/04-fogo-environment.md`)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "The YT (aToken) holder this position belongs to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "reward_debt_index",
+            "docs": [
+              "`yt_reward_index` value captured at the holder's last checkpoint",
+              "(mint / redeem / claim). Yield accrues only on the delta since."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "unclaimed",
+            "docs": [
+              "Settled-but-not-yet-transferred yield, wrapped 9-decimal gFOGO."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
           }
         ]
       }

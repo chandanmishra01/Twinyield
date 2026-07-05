@@ -36,6 +36,10 @@ export const PK = {
   oracle: new PublicKey(DEPLOYMENT.pdas.mock_oracle),
   rate: new PublicKey(DEPLOYMENT.pdas.mock_gfogo_rate),
   treasuryBaseAta: new PublicKey(DEPLOYMENT.atas.treasury_base),
+  // RebalancePool (stability pool)
+  poolState: new PublicKey(DEPLOYMENT.pdas.pool_state),
+  poolAssetAta: new PublicKey(DEPLOYMENT.atas.pool_asset),
+  poolBaseAta: new PublicKey(DEPLOYMENT.atas.pool_base),
 } as const;
 
 export const PRECISION = 10n ** 18n;
