@@ -226,7 +226,7 @@ export function MintRedeemPanel() {
             {tab === "redeem" && (
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {(["agFOGO", "xgFOGO"] as Side[]).map((s) => {
-                  const isPT = s === "agFOGO";
+                  const isPT = s === "xgFOGO";
                   const active = side === s;
                   return (
                     <button
@@ -256,7 +256,7 @@ export function MintRedeemPanel() {
                   {tab === "mint" ? (
                     <BaseTokenIcon size={28} />
                   ) : (
-                    <TokenMark kind={side === "agFOGO" ? "PT" : "YT"} size={32} />
+                    <TokenMark kind={side === "xgFOGO" ? "PT" : "YT"} size={32} />
                   )}
                 </div>
                 <div>
@@ -331,24 +331,20 @@ export function MintRedeemPanel() {
 
                 {mintMode === "both" ? (
                   <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-2">
-                    <ReceiveRow label="agFOGO" amount={outAFull / 2} nav={aNavN} tone="pt" />
-                    <ReceiveRow label="xgFOGO" amount={outXFull / 2} nav={xNavN} tone="yt" />
+                    <ReceiveRow label="agFOGO" amount={outAFull / 2} nav={aNavN} tone="yt" />
+                    <ReceiveRow label="xgFOGO" amount={outXFull / 2} nav={xNavN} tone="pt" />
                   </div>
                 ) : mintMode === "agFOGO" ? (
                   <div className="mb-2 flex justify-center">
-                    <ReceiveRow label="agFOGO" amount={outAFull} nav={aNavN} tone="pt" />
+                    <ReceiveRow label="agFOGO" amount={outAFull} nav={aNavN} tone="yt" />
                   </div>
                 ) : (
                   <div className="mb-2 flex justify-center">
-                    <ReceiveRow label="xgFOGO" amount={outXFull} nav={xNavN} tone="yt" />
+                    <ReceiveRow label="xgFOGO" amount={outXFull} nav={xNavN} tone="pt" />
                   </div>
                 )}
 
-                <div className="text-center text-[11px] text-white/40 mb-4">
-                  Mint fee: 0.1% for xgFOGO · 0% for agFOGO
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 mt-5 mb-4">
                   {mintMode === "both" ? (
                     <>
                       <ModeBtn label="Mint xgFOGO only" active={false} onClick={() => setMintMode("xgFOGO")} />

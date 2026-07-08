@@ -70,7 +70,7 @@ export function Dashboard() {
         <TrancheCard
           name="agFOGO"
           ticker="YT · Yield"
-          tone="pt"
+          tone="yt"
           nav={data.aNav}
           navOk={peggedOk}
           supply9={data.aSupply9}
@@ -79,7 +79,7 @@ export function Dashboard() {
         <TrancheCard
           name="xgFOGO"
           ticker="PT · Price"
-          tone="yt"
+          tone="pt"
           nav={data.xNav}
           navOk={ytAlive}
           supply9={data.xSupply9}
@@ -105,7 +105,7 @@ export function Dashboard() {
             <KV k="Total Base (accounted)" v={`${fmtToken9(data.totalBase9, 4)} gFOGO`} />
             <KV k="Treasury ATA Balance" v={`${fmtToken9(data.treasuryAta9, 4)} gFOGO`} />
             <KV k="USD Value of Collateral" v={`$${fmtUsd((data.totalBase9 * 10n ** 9n * data.price18) / PRECISION, 2)}`} />
-            <KV k="Buffer (Base × Price − PT $)" v={`$${formatBuffer(data)}`} />
+            <KV k="Buffer (Base × Price − YT $)" v={`$${formatBuffer(data)}`} />
           </div>
         </GlassCard>
 
@@ -144,9 +144,9 @@ function Headline() {
         <span className="text-gradient-split">split staking.</span>
       </h1>
       <p className="text-white/65 max-w-xl text-sm sm:text-[15px] leading-relaxed">
-        Stake gFOGO and split it into <span className="text-[var(--color-brand-300)]">agFOGO</span>, the
+        Stake gFOGO and split it into <span className="text-[var(--color-yt-300)]">agFOGO</span>, the
         $1-pegged yield token that earns the staking yield, and{" "}
-        <span className="text-[var(--color-yt-300)]">xgFOGO</span>, the price token with leveraged exposure
+        <span className="text-[var(--color-brand-300)]">xgFOGO</span>, the price token with leveraged exposure
         to FOGO&apos;s price.
       </p>
     </div>

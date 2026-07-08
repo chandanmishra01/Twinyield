@@ -1,32 +1,32 @@
 {
   "network": "FOGO Testnet",
   "rpc": "https://testnet.fogo.io",
-  "deployedAt": "2026-07-05T18:06:48.696Z",
+  "deployedAt": "2026-07-07T19:31:54.067Z",
   "admin": "5R8ExUG2Kmf3ZBFjYZdAwU6Mcv5BSYbPfGtji4MNCV3Q",
   "programs": {
-    "twinyield": "CJqiNeGDX4dt2hpfbia33KWqMtMBYkJ7XVMEDWfrAfWs",
-    "rebalance_pool": "6HJuxsEBZ126Gt7icTZ3jEzqWEtcPkKMrYBd8gUpunsn",
-    "mocks": "HF8FasszKcjvJsokhk57Fv7RT15ciLY6TrCJpD8MPMbA"
+    "twinyield": "9yJ62wmTUmnjK3b8fhKpCDa4YTwGh8NuKyoXJsdMvCnu",
+    "rebalance_pool": "5R4sZ5Yv8nhjSKYfLYS4PtLf8zFL4ALeqcmfz322fkrr",
+    "mocks": "GMNwDe952RFdvhUNdoQqagTqKAHjCnzUCWKP87KTZVwM"
   },
   "mints": {
-    "base_gfogo": "2C6i4L51fcPj3b3mJvVnd5U3qhG2U1U7UsCsAUmZHhq4",
-    "atoken_agfogo": "4EgLgsnsD6W3kcwpte9feVp4VD6ushN1BZubMTB7U3fh",
-    "xtoken_xgfogo": "4jKXGvdHgssoYCcMFuf478qq8CAxxkXdoiDM3Y8egLkE"
+    "base_gfogo": "GsDzPrTnBQGAHBgQmstNR5BwH3PoXASTnyvgU3XK8gbr",
+    "atoken_agfogo": "HKXpiPpN4YsWcX2JYyB7JDvAQhf4a9vEcfrhtKwKQ5yR",
+    "xtoken_xgfogo": "CYx8wVa93tmKMBKnFCswB5YSfe17QbqiavL4g91W8Mhh"
   },
   "pdas": {
-    "treasury_config": "DGpoLorLfws2nrpm78jDdr45anZXBd4XNdW6uS9ps6EE",
-    "treasury_runtime": "GVCBmniseEdbWtexnPtxAAwtKLwpnRaX9xGkQJ4Cyz1E",
-    "market_config": "2WgLpsRfyvzBmm2tNLuNwRG5e5op5NnvtaG5hN2YR4Sd",
-    "harvest_config": "3Caes27eakvSsqBMXPTWEdgsiRiUqDYx4LvkUoVyjDTC",
-    "pool_state": "2LLu7cZvYvvp2NL3kmqQtGvJHUMH9WYtifBKoNFn5byA",
-    "mock_oracle": "xDMd5YGNXsPaxdn1hkV56ERHkJ9CpbVbE4eBGCbL1ck",
-    "mock_gfogo_rate": "FgsPhMTTNTVQ5ibYAKQGuEJiBjd2ey8nivCBVLmYbh6W"
+    "treasury_config": "3213RbsjAxGvjhqA9L77pLU4kDnaDBbyJWGzyZgwiNGv",
+    "treasury_runtime": "2XuK5pUweKCzJ85Sa8vWtFxVSdiukTGWg7y7MxHUEYwS",
+    "market_config": "APttA2cMQDUveRi52jb3ZnxLE7C7oUJmqZV4BCiM7Y7C",
+    "harvest_config": "DojrKdGR6DEq5XdSHJPWV52tGvtB9Ldb19vpcErK5HcY",
+    "pool_state": "3ZKGjiBEreGKAgrvEUcK6cbB3Q6DVTUvRxp94cKCxNoi",
+    "mock_oracle": "FKw6SSC5pMF9p7Ea7HfkzdZnQw27f86Fc8Ac5nw8MLWo",
+    "mock_gfogo_rate": "3NhbtC3ZWj7vNUNQ9w8hCocsUHbN13iHmagu7x6hcRFr"
   },
   "atas": {
-    "admin_base": "BFwMKuxiGhszreNUzQfZR7BUk9G75vwTrzimgy8DnSRo",
-    "treasury_base": "B8DREFCm5wvGBXQ3ApZsEp7jA3nB1xhhfwSC2hcW7MVr",
-    "pool_asset": "46jwNZpcLkHTgRgURodHU1VfZeAqSvJwf3tUALzA59AL",
-    "pool_base": "AppgoySoaYnZgU1W2vicXQL2JDmMSpGYruGnsefWDfxc"
+    "admin_base": "EWjisYd5sT3K1fXY3BmpYvZazdFd3Fuf4HtXnhQ3J2Er",
+    "treasury_base": "A5egpZGCJ57y2wYMZ1m5iTGSbHzfXPAKSePLTtdPPqDC",
+    "pool_asset": "8UFdWtkraR54C7U4XfzSHgX8aQbH1To5BYXq1JXVs9FQ",
+    "pool_base": "7iZ5WVutEm2UJGiBkrwxnxShPvAruGqt7sXmzBoHpQy6"
   },
   "config": {
     "initialPrice": "$100 (1e20)",

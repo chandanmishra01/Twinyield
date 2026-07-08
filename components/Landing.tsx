@@ -85,8 +85,8 @@ function Hero() {
           </h1>
           <p className="mt-5 sm:mt-6 text-white/70 text-base sm:text-lg max-w-xl">
             TwinYield splits staked <span className="text-[var(--color-brand-400)] font-medium">gFOGO</span> into two tradeable tokens:{" "}
-            <span className="text-[var(--color-brand-400)] font-medium">agFOGO</span>, the yield token (YT) that earns the staking yield at a stable NAV, and{" "}
-            <span className="text-[var(--color-yt-400)] font-medium">xgFOGO</span>, the price token (PT) with leveraged exposure to FOGO&apos;s price.
+            <span className="text-[var(--color-yt-400)] font-medium">agFOGO</span>, the yield token (YT) that earns the staking yield at a stable NAV, and{" "}
+            <span className="text-[var(--color-brand-400)] font-medium">xgFOGO</span>, the price token (PT) with leveraged exposure to FOGO&apos;s price.
           </p>
           <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-3">
             <Link href="/mint" className="btn-hemi text-sm sm:text-base">
@@ -189,26 +189,26 @@ function Splitter3D() {
               <stop offset="100%" stopColor="#33d2ff" />
             </linearGradient>
           </defs>
-          <path d="M200 164 C 188 250, 118 305, 99 352" stroke="url(#ptGrad)" strokeWidth="2" fill="none" className="conduit" opacity="0.9" />
-          <path d="M200 164 C 212 250, 282 305, 301 352" stroke="url(#ytGrad)" strokeWidth="2" fill="none" className="conduit" opacity="0.9" />
-          <circle cx="99" cy="352" r="38" fill="#ff6b33" opacity="0.12" />
-          <circle cx="301" cy="352" r="38" fill="#33d2ff" opacity="0.12" />
+          <path d="M200 164 C 188 250, 118 305, 99 352" stroke="url(#ytGrad)" strokeWidth="2" fill="none" className="conduit" opacity="0.9" />
+          <path d="M200 164 C 212 250, 282 305, 301 352" stroke="url(#ptGrad)" strokeWidth="2" fill="none" className="conduit" opacity="0.9" />
+          <circle cx="99" cy="352" r="38" fill="#33d2ff" opacity="0.12" />
+          <circle cx="301" cy="352" r="38" fill="#ff6b33" opacity="0.12" />
         </svg>
 
         <div className="absolute" style={{ left: "8%", top: "58%", transform: "translateZ(90px)" }}>
           <div className="animate-floatLeft">
-            <TokenChip kind="PT" />
+            <TokenChip kind="YT" />
           </div>
         </div>
         <div className="absolute" style={{ right: "8%", top: "58%", transform: "translateZ(90px)" }}>
           <div className="animate-floatRight">
-            <TokenChip kind="YT" />
+            <TokenChip kind="PT" />
           </div>
         </div>
 
         <FloatingChip className="top-[4%] left-[2%]" depth={50} title="" value="Perpetual" />
-        <FloatingChip className="top-[20%] right-[2%]" depth={30} title="YT" value="Earns yield" tone="brand" />
-        <FloatingChip className="bottom-[4%] left-[30%]" depth={40} title="PT" value="Price upside" tone="yt" />
+        <FloatingChip className="top-[20%] right-[2%]" depth={30} title="YT" value="Earns yield" tone="yt" />
+        <FloatingChip className="bottom-[4%] left-[30%]" depth={40} title="PT" value="Price upside" tone="brand" />
       </div>
     </div>
   );
@@ -231,9 +231,9 @@ function SourceOrb() {
 
 function TokenChip({ kind }: { kind: "PT" | "YT" }) {
   const isPT = kind === "PT";
-  const ticker = isPT ? "agFOGO" : "xgFOGO";
-  const role = isPT ? "YT" : "PT";
-  const tagline = isPT ? "Earns yield, redeemable" : "Leveraged FOGO upside";
+  const ticker = isPT ? "xgFOGO" : "agFOGO";
+  const role = kind;
+  const tagline = isPT ? "Leveraged FOGO upside" : "Earns yield, redeemable";
   return (
     <div className="relative">
       <div
@@ -343,7 +343,7 @@ function TwoTokens() {
         />
         <div className="mt-10 sm:mt-14 grid md:grid-cols-2 gap-5 sm:gap-6">
           <TokenBigCard
-            kind="PT"
+            kind="YT"
             name="agFOGO"
             ticker="YT · Yield Token"
             role="Yield observer"
@@ -357,7 +357,7 @@ function TwoTokens() {
             ]}
           />
           <TokenBigCard
-            kind="YT"
+            kind="PT"
             name="xgFOGO"
             ticker="PT · Price Token"
             role="Price observer"
@@ -483,9 +483,9 @@ function TokenBigCard({
 
         <div className="relative mt-8 rounded-2xl glass p-4">
           <div className="flex items-center justify-between text-xs text-white/55">
-            <span>{isPT ? "Value over time" : "Price payoff"}</span>
+            <span>{isPT ? "Price payoff" : "Value over time"}</span>
             <span className={isPT ? "text-[var(--color-brand-300)]" : "text-[var(--color-yt-300)]"}>
-              {isPT ? "Stable + yield" : "Leveraged upside"}
+              {isPT ? "Leveraged upside" : "Stable + yield"}
             </span>
           </div>
           <div className="mt-3">
@@ -498,11 +498,11 @@ function TokenBigCard({
 }
 
 /* Payoff charts under each token card.
-   variant "PT" = agFOGO (the YT token): steady NAV + accruing yield → gentle rise.
-   variant "YT" = xgFOGO (the PT token): leveraged price exposure → steep rise above a 1× FOGO reference. */
+   variant "YT" = agFOGO (the yield token): steady NAV + accruing yield → gentle rise (cyan).
+   variant "PT" = xgFOGO (the price token): leveraged price exposure → steep rise above a 1× FOGO reference (orange). */
 function PayoffChart({ variant }: { variant: "PT" | "YT" }) {
-  const isYield = variant === "PT";
-  const stroke = isYield ? "var(--color-brand-400)" : "var(--color-yt-300)";
+  const isYield = variant === "YT";
+  const stroke = isYield ? "var(--color-yt-400)" : "var(--color-brand-400)";
   const gid = isYield ? "payoffYield" : "payoffLev";
   return (
     <div className="relative h-24 w-full overflow-hidden rounded-lg">
@@ -535,12 +535,12 @@ function PayoffChart({ variant }: { variant: "PT" | "YT" }) {
       {isYield ? (
         <>
           <span className="absolute left-2 bottom-1 text-[9px] uppercase tracking-[0.18em] text-white/40">time</span>
-          <span className="absolute right-2 top-1.5 text-[10px] font-mono text-[var(--color-brand-300)]">agFOGO · +yield</span>
+          <span className="absolute right-2 top-1.5 text-[10px] font-mono text-[var(--color-yt-300)]">agFOGO · +yield</span>
         </>
       ) : (
         <>
           <span className="absolute left-2 bottom-1 text-[9px] uppercase tracking-[0.18em] text-white/40">FOGO price</span>
-          <span className="absolute right-2 top-1.5 text-[10px] font-mono text-[var(--color-yt-300)]">xgFOGO ▲ leveraged</span>
+          <span className="absolute right-2 top-1.5 text-[10px] font-mono text-[var(--color-brand-300)]">xgFOGO ▲ leveraged</span>
           <span className="absolute right-2 top-8 text-[9px] font-mono text-white/35">FOGO 1×</span>
         </>
       )}
@@ -685,8 +685,8 @@ function CubeVisual() {
       >
         <div className="face front text-[var(--color-brand-300)] font-display text-xl">gFOGO</div>
         <div className="face back text-[var(--color-yt-300)] font-display text-xl">Market</div>
-        <div className="face right text-[var(--color-brand-300)] font-display text-xl">YT</div>
-        <div className="face left text-[var(--color-yt-300)] font-display text-xl">PT</div>
+        <div className="face right text-[var(--color-yt-300)] font-display text-xl">YT</div>
+        <div className="face left text-[var(--color-brand-300)] font-display text-xl">PT</div>
         <div className="face top text-white/70 font-mono text-xs">REDEEM</div>
         <div className="face bottom text-white/70 font-mono text-xs">MINT</div>
       </div>
@@ -745,9 +745,9 @@ function Mechanics() {
           <p className="font-mono text-sm sm:text-base text-white/85 break-words">
             <span className="text-white">gFOGO treasury</span>{" "}
             <span className="text-[var(--color-brand-300)]">=</span>{" "}
-            <span className="text-[var(--color-brand-300)]">agFOGO (YT)</span>{" "}
+            <span className="text-[var(--color-yt-300)]">agFOGO (YT)</span>{" "}
             <span className="text-white/50">+</span>{" "}
-            <span className="text-[var(--color-yt-300)]">xgFOGO (PT)</span>
+            <span className="text-[var(--color-brand-300)]">xgFOGO (PT)</span>
             <span className="text-white/45">. Fully backed, on-chain, non-custodial.</span>
           </p>
         </div>
@@ -816,9 +816,9 @@ function JourneyExample() {
               <JourneyStep tag="Deposit"    tone="neutral" title="Deposits 100 gFOGO"
                 detail="Supplies 100 gFOGO to the treasury, then decides which tranche to mint at the current NAV." />
               <div className="grid md:grid-cols-2 gap-3">
-                <JourneyStep tag="Option A · YT" tone="brand" title="Mints agFOGO"
+                <JourneyStep tag="Option A · YT" tone="yt" title="Mints agFOGO"
                   detail="Takes the stable tranche: a steady-NAV position that earns the gFOGO staking yield, redeemable any time. No price risk." />
-                <JourneyStep tag="Option B · PT" tone="yt" title="Mints xgFOGO"
+                <JourneyStep tag="Option B · PT" tone="brand" title="Mints xgFOGO"
                   detail="Takes the leveraged tranche: amplified exposure to FOGO's price that absorbs the volatility agFOGO sheds. Higher risk, bigger upside." />
               </div>
               <JourneyStep tag="Exit" tone="neutral" title="Redeem or trade, any time"
@@ -840,8 +840,8 @@ function JourneyExample() {
               <YieldDial />
             </div>
             <div className="grid grid-cols-3 gap-3 mt-4">
-              <MicroBadge label="YT"         value="agFOGO" tone="brand" />
-              <MicroBadge label="PT"         value="xgFOGO" tone="yt" />
+              <MicroBadge label="YT"         value="agFOGO" tone="yt" />
+              <MicroBadge label="PT"         value="xgFOGO" tone="brand" />
               <MicroBadge label="Underlying" value="gFOGO" />
             </div>
           </div>
@@ -1064,6 +1064,18 @@ function Footer() {
         <div className="flex items-center gap-4 sm:gap-6 text-sm text-white/50">
           <Link href="/dashboard" className="hover:text-[var(--color-brand-400)] transition">Dashboard</Link>
           <Link href="/mint" className="hover:text-[var(--color-brand-400)] transition">Mint</Link>
+          <a
+            href="https://twitter.com/twinyield"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Twitter"
+            className="hover:text-[var(--color-brand-400)] transition inline-flex items-center gap-1.5"
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+            <span>Twitter</span>
+          </a>
         </div>
       </div>
     </footer>
@@ -1094,7 +1106,7 @@ function SectionTitle({
 
 export function TokenMark({ kind, size = 32 }: { kind: "PT" | "YT"; size?: number }) {
   const src = kind === "PT" ? "/PT_FOGO.png" : "/YT_FOGO.png";
-  const alt = kind === "PT" ? "agFOGO (YT)" : "xgFOGO (PT)";
+  const alt = kind === "PT" ? "xgFOGO (PT)" : "agFOGO (YT)";
   return (
     <img
       src={src}

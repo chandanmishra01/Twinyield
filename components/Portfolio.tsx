@@ -100,13 +100,13 @@ export function Portfolio() {
         </div>
         <div className="relative h-1.5 mt-6 bg-white/10 rounded-full overflow-hidden flex">
           <Slice value={baseValueUsd} total={totalUsd} color="#FFB454" />
-          <Slice value={aValueUsd} total={totalUsd} color="#ff6b33" />
-          <Slice value={xValueUsd} total={totalUsd} color="#33d2ff" />
+          <Slice value={aValueUsd} total={totalUsd} color="#33d2ff" />
+          <Slice value={xValueUsd} total={totalUsd} color="#ff6b33" />
         </div>
         <div className="relative flex flex-wrap gap-4 mt-3 text-[10px] uppercase tracking-widest tabular">
           <Legend color="#FFB454" label="gFOGO"  pct={pct(baseValueUsd, totalUsd)} />
-          <Legend color="#ff6b33" label="agFOGO" pct={pct(aValueUsd, totalUsd)} />
-          <Legend color="#33d2ff" label="xgFOGO" pct={pct(xValueUsd, totalUsd)} />
+          <Legend color="#33d2ff" label="agFOGO" pct={pct(aValueUsd, totalUsd)} />
+          <Legend color="#ff6b33" label="xgFOGO" pct={pct(xValueUsd, totalUsd)} />
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export function Portfolio() {
           value={baseValueUsd}
         />
         <HoldingCard
-          variant="pt"
+          variant="yt"
           label="agFOGO"
           sub="YT · Yield"
           balance={bal?.a9 ?? 0n}
@@ -133,7 +133,7 @@ export function Portfolio() {
           claimErr={claimErr}
         />
         <HoldingCard
-          variant="yt"
+          variant="pt"
           label="xgFOGO"
           sub="PT · Price"
           balance={bal?.x9 ?? 0n}
@@ -217,7 +217,7 @@ function HoldingCard({
               disabled={!canClaim}
               className={`shrink-0 text-[11px] uppercase tracking-widest px-3.5 py-2 rounded-lg border transition ${
                 canClaim
-                  ? "border-[var(--color-brand-300)]/40 text-[var(--color-brand-300)] hover:bg-[var(--color-brand-500)]/15"
+                  ? "border-[var(--color-yt-300)]/40 text-[var(--color-yt-300)] hover:bg-[var(--color-yt-500)]/15"
                   : "border-white/[0.08] text-white/30 cursor-not-allowed"
               }`}
             >

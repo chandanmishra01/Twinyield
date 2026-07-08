@@ -128,8 +128,8 @@ export function PoolPanel() {
 
           <div className="relative p-4 sm:p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-11 h-11 rounded-2xl bg-[var(--color-brand-500)]/15 border border-[var(--color-brand-500)]/30 grid place-items-center">
-                <TokenMark kind="PT" size={30} />
+              <div className="w-11 h-11 rounded-2xl bg-[var(--color-yt-500)]/15 border border-[var(--color-yt-500)]/30 grid place-items-center">
+                <TokenMark kind="YT" size={30} />
               </div>
               <div>
                 <div className="font-display text-lg text-white/90">Stability Pool</div>

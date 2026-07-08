@@ -110,13 +110,13 @@ export function HistoryView() {
             label="PT NAV Δ"
             value={`${stats.ytPct > 0 ? "+" : ""}${stats.ytPct.toFixed(2)}%`}
             sub={`$${stats.ytFrom.toFixed(2)} → $${stats.ytTo.toFixed(2)}`}
-            tone="yt"
+            tone="pt"
           />
           <MiniStat
             label="YT Stable Days"
             value={`${stats.navStable}/${stats.days + 1}`}
             sub="agFOGO held $1.00"
-            tone="pt"
+            tone="yt"
           />
           <MiniStat
             label="Yield (rate)"
@@ -167,12 +167,12 @@ export function HistoryView() {
 
         <div className="relative mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 text-[11px] text-white/55 leading-relaxed">
           <FindingBox
-            tone="pt"
+            tone="yt"
             title="agFOGO (YT) · pinned"
             body="Held $1.00 every single day. Senior tranche is paid first; absorbs zero volatility while CR > liquidation ratio."
           />
           <FindingBox
-            tone="yt"
+            tone="pt"
             title="xgFOGO (PT) · leveraged"
             body="NAV moved with realized leverage on top of the underlying price action. The junior tranche absorbs all price movement — no yield."
           />
@@ -247,8 +247,8 @@ function NavsChart({ data }: { data: Row[] }) {
       <AreaChart data={data}>
         <defs>
           <linearGradient id="grad-yt" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#33d2ff" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="#33d2ff" stopOpacity={0} />
+            <stop offset="0%" stopColor="#ff6b33" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#ff6b33" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.06)" />
@@ -258,7 +258,7 @@ function NavsChart({ data }: { data: Row[] }) {
         <Area
           type="monotone"
           dataKey="x_nav"
-          stroke="#33d2ff"
+          stroke="#ff6b33"
           strokeWidth={1.5}
           fill="url(#grad-yt)"
           name="xgFOGO NAV"
@@ -267,7 +267,7 @@ function NavsChart({ data }: { data: Row[] }) {
         <Line
           type="monotone"
           dataKey="a_nav"
-          stroke="#ff6b33"
+          stroke="#33d2ff"
           strokeWidth={1.5}
           name="agFOGO NAV"
           dot={false}

@@ -32,10 +32,25 @@ export function TopNav() {
   const { connected, connecting, wallet } = useWallet();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // On refresh the wallet adapter restores the previously-selected wallet and
+  // starts auto-connecting in a mount effect that runs *after* this component's
+  // effects. So on the first tick `wallet` is null and `connecting` is false
+  // even when the deployer is about to reconnect. Read the adapter's persisted
+  // selection (localStorage key "walletName") during the first render so the
+  // guard below doesn't kick the admin to /dashboard before the reconnect runs.
+  const [autoReconnectPending] = useState(() => {
+    try {
+      return typeof window !== "undefined" && !!window.localStorage.getItem("walletName");
+    } catch {
+      return false;
+    }
+  });
+
   // The wallet auto-connects asynchronously after a refresh, so `isAdmin` is
-  // briefly false on mount. Wait until the wallet state has settled — either
-  // connected, or no wallet selected and not mid-connect — before deciding.
-  const walletSettled = connected || (!wallet && !connecting);
+  // briefly false on mount. Wait until the wallet state has settled — connected,
+  // or (no reconnect pending, no wallet selected, and not mid-connect).
+  const walletSettled =
+    connected || (!autoReconnectPending && !wallet && !connecting);
 
   // Kick anyone off /admin who isn't the deployer (once the wallet has settled)
   useEffect(() => {
